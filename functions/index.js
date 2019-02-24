@@ -20,9 +20,12 @@ exports['counter'] = functions.https.onRequest((req, res) => {
     .get()
     .then((snapshot) => {
       /* switch this back to a referrer once we get the gif thing goin */
-      //let ref = req.header('Referer');
-      let ref = req.query.counter;
+      let ref = req.header('referer');
+      //let ref = req.query.counter;
       ref = ref || 'root';
+      if (req.hostname !== 'localhost' || ref.indexOf('https://maxrafferty.com') !== 0) {
+        res.status(400).send('No.');
+      }
       let aTuringRef = db.collection('counters').doc(ref);
       let found;
       let count;
