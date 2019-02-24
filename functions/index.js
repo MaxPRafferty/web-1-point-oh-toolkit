@@ -23,7 +23,7 @@ exports['counter'] = functions.https.onRequest((req, res) => {
       let ref = req.header('referer');
       //let ref = req.query.counter;
       ref = ref || 'root';
-      if (req.hostname !== 'localhost' || ref.indexOf('https://maxrafferty.com') !== 0) {
+      if (req.hostname !== 'localhost' && ref.indexOf('https://maxrafferty.com') !== 0) {
         res.status(400).send('No.');
       }
       let aTuringRef = db.collection('counters').doc(ref);
