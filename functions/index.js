@@ -2,14 +2,25 @@
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const { exec } = require('child_process');
+var gm = require('gm').subClass({ imageMagick: true });
+require('gm-base64');
 
 admin.initializeApp(functions.config().firebase);
 let db = admin.firestore();
 
 exports['counter'] = functions.https.onRequest((req, res) => {
+  exec('ls', (err, stderr) => {
+    if (err) {
+      throw err;
+    }
+    console.log(stderr);
+  });
   db.collection('counters')
     .get()
     .then((snapshot) => {
+      /* switch this back to a referrer once we get the gif thing goin */
+      //let ref = req.header('Referer');
       let ref = req.query.counter;
       ref = ref || 'root';
       let aTuringRef = db.collection('counters').doc(ref);
@@ -32,7 +43,29 @@ exports['counter'] = functions.https.onRequest((req, res) => {
       let setAlan = aTuringRef.set({
         count,
       });
-      res.send('' + count);
+      //res.type('png');
+      gm(210, 35, '#ffffffdd')
+        .fill('#000000dd')
+        .drawRectangle(0, 0, 510, 510)
+        //.drawCircle(10, 10, 120, 5)
+        .font('font.ttf', 20)
+        .fill('#00ff00dd')
+        .drawText(10, 25, '' + count)
+        .toBase64('png', function(err, base64) {
+          if (err != null) {
+            throw err;
+          }
+          console.info(`got base64 encoding: ${base64}`);
+          var img = new Buffer(base64, 'base64');
+
+          res.writeHead(200, {
+            'Content-Type': 'image/png',
+            'Content-Length': img.length,
+          });
+          res.end(img);
+        });
+      //res.send('data:text/plain;charset=utf-8;base64,MQ==');
+      //res.send('' + count);
       return snapshot;
     })
     .catch((err) => {
