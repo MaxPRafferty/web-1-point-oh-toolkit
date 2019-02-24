@@ -43,14 +43,12 @@ exports['counter'] = functions.https.onRequest((req, res) => {
       let setAlan = aTuringRef.set({
         count,
       });
-      //res.type('png');
-      gm(210, 35, '#ffffffdd')
+      gm(80, 27, '#000000dd')
         .fill('#000000dd')
         .drawRectangle(0, 0, 510, 510)
-        //.drawCircle(10, 10, 120, 5)
         .font('font.ttf', 20)
-        .fill('#00ff00dd')
-        .drawText(10, 25, '' + count)
+        .fill('#ffffff')
+        .drawText(10, 20, '' + count)
         .toBase64('png', function(err, base64) {
           if (err != null) {
             throw err;
