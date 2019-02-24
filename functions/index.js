@@ -2,7 +2,6 @@
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const { exec } = require('child_process');
 var gm = require('gm').subClass({ imageMagick: true });
 require('gm-base64');
 
@@ -10,22 +9,13 @@ admin.initializeApp(functions.config().firebase);
 let db = admin.firestore();
 
 exports['counter'] = functions.https.onRequest((req, res) => {
-  exec('ls', (err, stderr) => {
-    if (err) {
-      throw err;
-    }
-    console.log(stderr);
-  });
   db.collection('counters')
     .get()
     .then((snapshot) => {
-      /* switch this back to a referrer once we get the gif thing goin */
-      let ref = req.header('referer');
-      //let ref = req.query.counter;
+      /* evidently referer isnt making it to google cloud. problem for another day.*/
+      //let ref = req.header('referer');
+      let ref = req.query.counter;
       ref = ref || 'root';
-      if (req.hostname !== 'localhost' && ref.indexOf('https://maxrafferty.com') !== 0) {
-        res.status(400).send('No.');
-      }
       let aTuringRef = db.collection('counters').doc(ref);
       let found;
       let count;
@@ -63,6 +53,7 @@ exports['counter'] = functions.https.onRequest((req, res) => {
           res.writeHead(200, {
             'Content-Type': 'image/png',
             'Content-Length': img.length,
+            'Access-Control-Allow-Origin': 'https://maxrafferty.com/',
           });
           res.end(img);
         });
