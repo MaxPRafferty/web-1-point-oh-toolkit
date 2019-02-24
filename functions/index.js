@@ -43,7 +43,8 @@ exports['counter'] = functions.https.onRequest((req, res) => {
       let setAlan = aTuringRef.set({
         count,
       });
-      gm(80, 27, '#000000dd')
+      let width = 12 + 16 * ('' + count).split('').length;
+      gm(width, 27, '#000000dd')
         .fill('#000000dd')
         .drawRectangle(0, 0, 510, 510)
         .font('font.ttf', 20)
